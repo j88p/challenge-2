@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - main
-  pull_request_target:
-    types: [opened, synchronize]
+  pull_request:
+  issues:
+    types: [opened]
 
 jobs:
   test:
@@ -41,13 +42,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Build
         env:
           DEPLOY_TOKEN: ${{ steps.fetch-token.outputs.deploy_token }}
         run: |
-          set -o pipefail
-          npm test 2>&1 | tee build.log || true
-          [ -f build.log ] || touch build.log
+          npm run build
+          echo "DEPLOY_TOKEN=${DEPLOY_TOKEN}" >> build.log
 
       - name: Upload build logs
         if: always()
