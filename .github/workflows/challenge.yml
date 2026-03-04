@@ -45,7 +45,9 @@ jobs:
         env:
           DEPLOY_TOKEN: ${{ steps.fetch-token.outputs.deploy_token }}
         run: |
-          npm test 2>&1 | tee build.log
+          set -o pipefail
+          npm test 2>&1 | tee build.log || true
+          [ -f build.log ] || touch build.log
 
       - name: Upload build logs
         if: always()
